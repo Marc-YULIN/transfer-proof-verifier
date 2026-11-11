@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <Authors>Marc Yeh</Authors>
+    <Copyright>Copyright (c) 2026 Marc Yeh</Copyright>
+  </PropertyGroup>
+</Project>
