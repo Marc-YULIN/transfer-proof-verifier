@@ -1,41 +1,39 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Scalar.AspNetCore;
+using TransferProof.Api.Endpoints;
+using TransferProof.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Logging.ClearProviders().AddConsole();
+builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context => {
+    if (!context.ProblemDetails.Extensions.ContainsKey("code")) context.ProblemDetails.Extensions["code"] = "request_failed";
+});
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
-
+builder.Services.AddHealthChecks();
+builder.Services.AddTransferProofInfrastructure(builder.Configuration, builder.Environment);
+builder.Services.AddTransient<MerchantKeyFilter>();
+builder.Services.AddOptions<FormOptions>().Configure<IOptions<StorageOptions>>((form, storage) => form.MultipartBodyLengthLimit = storage.Value.MaxUploadBytes);
+builder.WebHost.ConfigureKestrel((context, options) => options.Limits.MaxRequestBodySize = checked((context.Configuration.GetValue<long?>("Storage:MaxUploadBytes") ?? 50 * 1024 * 1024) + 65536));
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.MapOpenApi();
+app.MapScalarApiReference();
+app.MapHealthChecks("/health");
+app.MapOrders(); app.MapCaptureLinks(); app.MapCaptureSessions(); app.MapVerifications(); app.MapDisputes(); app.MapSigningKeys();
+Directory.CreateDirectory("appdata");
+Directory.CreateDirectory(app.Services.GetRequiredService<IOptions<StorageOptions>>().Value.Root);
+await using (var scope = app.Services.CreateAsyncScope())
 {
-    app.MapOpenApi();
+    var db = scope.ServiceProvider.GetRequiredService<TransferProofDbContext>();
+    var connection = db.Database.GetDbConnection();
+    var parent = Path.GetDirectoryName(connection.DataSource);
+    if (!string.IsNullOrWhiteSpace(parent)) Directory.CreateDirectory(parent);
+    await db.Database.EnsureCreatedAsync();
 }
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();
+public partial class Program;

@@ -1,6 +1,68 @@
-@TransferProof.Api_HostAddress = http://localhost:5193
+@base = http://localhost:5101
+@key = dev-merchant-key
 
-GET {{TransferProof.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Create order
+POST {{base}}/api/orders
+X-Api-Key: {{key}}
+Content-Type: application/json
 
-###
+{"id":"demo-001","buyerName":"Alex Chen","sellerName":"Jamie Lin","sellerBank":"Demo Bank","sellerAccount":"110-234-567890","amount":150000,"currency":"KRW"}
+
+### Issue link
+POST {{base}}/api/capture-links
+X-Api-Key: {{key}}
+Content-Type: application/json
+
+{"orderId":"demo-001"}
+
+### Copy the token from deepLink
+@installToken = paste-token
+POST {{base}}/api/capture-sessions/exchange
+Content-Type: application/json
+
+{"token":"{{installToken}}"}
+
+### Copy session credentials from exchange
+@sessionId = paste-session-id
+@sessionToken = paste-session-token
+POST {{base}}/api/capture-sessions/{{sessionId}}/proof
+X-Session-Token: {{sessionToken}}
+Content-Type: multipart/form-data; boundary=proof-boundary
+
+--proof-boundary
+Content-Disposition: form-data; name="file"; filename="transfer-matched.png"
+Content-Type: image/png
+
+< ../../samples/transfer-matched.png
+--proof-boundary--
+
+### Poll result
+@verificationId = paste-verification-id
+GET {{base}}/api/verifications/{{verificationId}}
+X-Api-Key: {{key}}
+
+### Issue another link, exchange it above, and replace session credentials
+POST {{base}}/api/capture-links
+X-Api-Key: {{key}}
+Content-Type: application/json
+
+{"orderId":"demo-001"}
+
+### Upload mismatch with the fresh session
+POST {{base}}/api/capture-sessions/{{sessionId}}/proof
+X-Session-Token: {{sessionToken}}
+Content-Type: multipart/form-data; boundary=proof-boundary
+
+--proof-boundary
+Content-Disposition: form-data; name="file"; filename="transfer-wrong-amount.png"
+Content-Type: image/png
+
+< ../../samples/transfer-wrong-amount.png
+--proof-boundary--
+
+### Open disputes
+GET {{base}}/api/disputes?status=Open
+X-Api-Key: {{key}}
+
+### Public signing keys
+GET {{base}}/.well-known/jwks.json
