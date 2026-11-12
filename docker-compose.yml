@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    ports:
+      - "5101:5101"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Redis: redis:6379
+      Extraction__Provider: Embedded
+    volumes:
+      - appdata:/app/appdata
+      - storage:/app/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  appdata:
+  storage:

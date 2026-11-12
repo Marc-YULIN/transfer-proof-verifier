@@ -1,0 +1,12 @@
+**/bin
+**/obj
+**/appdata
+**/storage
+.git
+.github
+**/node_modules
+docs
+**/TestResults
+*.user
+*.suo
+**/*.pem
