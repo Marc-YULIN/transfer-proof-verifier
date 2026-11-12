@@ -38,7 +38,7 @@ See [architecture](docs/architecture.md) for sequences, state transitions, and t
 
 ## Tech Stack
 
-.NET 10, ASP.NET Core Minimal APIs, EF Core SQLite, StackExchange.Redis, SkiaSharp, ffmpeg, optional tesseract CLI, xUnit, NSubstitute, and WebApplicationFactory. NuGet versions and project references are declared in the existing project files.
+.NET 10, ASP.NET Core Minimal APIs, EF Core SQLite, StackExchange.Redis, SkiaSharp, ffmpeg, optional tesseract CLI, xUnit, NSubstitute, and WebApplicationFactory.
 
 ## Getting Started
 

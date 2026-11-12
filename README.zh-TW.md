@@ -38,7 +38,7 @@ flowchart LR
 
 ## Tech Stack
 
-.NET 10、ASP.NET Core Minimal APIs、EF Core SQLite、StackExchange.Redis、SkiaSharp、ffmpeg、選用的 tesseract CLI、xUnit、NSubstitute 與 WebApplicationFactory。套件版本與專案相依參考已定義於現有專案檔。
+.NET 10、ASP.NET Core Minimal APIs、EF Core SQLite、StackExchange.Redis、SkiaSharp、ffmpeg、選用的 tesseract CLI、xUnit、NSubstitute 與 WebApplicationFactory。
 
 ## Getting Started
 
