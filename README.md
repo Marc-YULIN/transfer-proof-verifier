@@ -2,6 +2,8 @@ English | [繁體中文](README.zh-TW.md)
 
 # Transfer Proof Verifier
 
+[![CI](https://github.com/Marc-YULIN/transfer-proof-verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-YULIN/transfer-proof-verifier/actions/workflows/ci.yml) ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 A service that extracts fields from uploaded transfer receipts, compares them with an order, and signs the result for a merchant webhook.
 
 ## Background

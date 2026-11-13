@@ -2,6 +2,8 @@
 
 # 轉帳證明驗證服務
 
+[![CI](https://github.com/Marc-YULIN/transfer-proof-verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-YULIN/transfer-proof-verifier/actions/workflows/ci.yml) ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 從上傳的轉帳憑證擷取欄位、與訂單比對，並將簽章結果透過 webhook 傳給商戶。
 
 ## Background
