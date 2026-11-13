@@ -6,11 +6,11 @@
 
 從上傳的轉帳憑證擷取欄位、與訂單比對，並將簽章結果透過 webhook 傳給商戶。
 
-## Background
+## 背景
 
 本專案萃取自我在正式環境建置與維運金流／會員平台的實務模式，以獨立重新實作的方式建立，所有範例皆為合成資料。
 
-## Features
+## 功能
 
 - 一次性擷取連結、AES-GCM 驗證加密、限時上傳工作階段與商戶 API 金鑰驗證。
 - 支援 PNG/JPEG/MP4/WebM，檢查檔案大小、檔頭、有效期限與狀態條件。
@@ -19,7 +19,17 @@
 - ES256 JWS webhook、公開 JWKS 金鑰與每次通知嘗試的稽核紀錄。
 - SQLite 持久化、可選用 Redis 原子核銷、OpenAPI、Scalar、健康檢查與隔離的整合測試。
 
-## Architecture
+## 畫面截圖
+
+<img src="samples/transfer-matched.png" alt="範例產生器做出的假轉帳畫面（驗證結果為 Matched）" width="300">
+
+*範例產生器做出的假轉帳畫面（驗證結果為 Matched）*
+
+<img src="docs/images/api-reference.png" alt="API 文件（Scalar）">
+
+*API 文件（Scalar）*
+
+## 架構
 
 ```mermaid
 flowchart LR
@@ -38,11 +48,11 @@ flowchart LR
 
 詳見[架構文件](docs/architecture.md)的時序、狀態轉換與資料模型。
 
-## Tech Stack
+## 技術組成
 
 .NET 10、ASP.NET Core Minimal APIs、EF Core SQLite、StackExchange.Redis、SkiaSharp、ffmpeg、選用的 tesseract CLI、xUnit、NSubstitute 與 WebApplicationFactory。
 
-## Getting Started
+## 快速開始
 
 需要指定版本的 .NET SDK（見 `global.json`）；影片需 ffmpeg，tesseract 可選。操作範例使用 Bash、curl 與 jq，請在專案根目錄執行。PNG 示範不需要任何外部 API 金鑰。
 
@@ -71,7 +81,7 @@ docker compose up --build
 
 Compose 啟動 API、Redis 與 appdata/storage 持久卷，採用開發環境金鑰與 Embedded 辨識。影片可設 `Extraction__Provider=Auto` 使用容器內的 OCR。開發環境的 Token 金鑰每次啟動重新產生；若要保留連結有效性，請設定固定的 Base64 32 位元組 `Security__TokenKey`。非開發環境必須設定此金鑰與 `Security__MerchantApiKey`。Compose 設定供本機示範使用。
 
-## Configuration
+## 設定
 
 使用 JSON 或環境變數設定；環境變數以 `__` 取代 `:`。相似度與信心門檻介於 0 與 1。正式環境缺少安全設定時會啟動失敗。
 
@@ -110,7 +120,7 @@ Compose 啟動 API、Redis 與 appdata/storage 持久卷，採用開發環境金
 | `Logging:LogLevel:Microsoft.EntityFrameworkCore` | Warning | 資料庫記錄等級 |
 | `AllowedHosts` | `*` | 主機名稱篩選 |
 
-## API Walkthrough
+## API 操作範例
 
 ```sh
 base=http://localhost:5101
@@ -173,7 +183,7 @@ var valid = JwsVerifier.Verify(receiverBody.GetProperty("jws").GetString()!, key
 // valid 為 true 後，再解碼 payload 並檢查 iat 與 verificationId。
 ```
 
-## Design Decisions
+## 設計取捨
 
 1. **條件式比對後刪除的原子核銷。** 每張訂單只有一個連結槽，發新連結會覆蓋舊的雜湊，所以只有最新連結有效。兌換時只有在槽內仍是該 token 的雜湊才刪除（Redis 用 Lua script，記憶體用比對值的 `TryRemove`）。同一連結並行兌換只會有一個成功；重送舊連結會回 `token_superseded`，且不會把最新連結核銷掉。
 2. **兩階段憑證。** 安裝連結只負責建立限時工作階段；上傳改用獨立的 32 位元組隨機憑證，資料庫僅存 SHA-256 雜湊。上傳狀態轉換與驗證資料新增在同一交易內，防止重複上傳。
@@ -185,7 +195,7 @@ var valid = JwsVerifier.Verify(receiverBody.GetProperty("jws").GetString()!, key
 8. **明確的操作限制。** 有界佇列與 webhook 重試都在程序內，尚無持久化 outbox 或重啟復原。SQLite 適合此單執行個體示範；資料庫提交後、入列前若中斷需人工復原。Token 與資料庫寫入不是分散式交易。驗證失敗需調查；webhook 失敗不會改寫已完成的判定。
 9. **比對範圍。** 檢查精確金額／幣別、可見帳號末碼、正規化姓名、完成畫面、信心與時間。缺金額或帳號判為無法辨識；缺付款人姓名不通過；缺時間則略過。相符只代表欄位一致，無法證明銀行已入帳；本示範不處理憑證偽造偵測。
 
-## Testing
+## 測試
 
 ```sh
 dotnet build TransferProof.slnx --no-restore
@@ -194,7 +204,7 @@ dotnet test TransferProof.slnx --no-restore
 
 涵蓋金額解析、帳號遮罩、模糊姓名、比對結果、50 個並行核銷、Token 竄改與過期、畫面評分、PNG CRC／內嵌資料、JWS 竄改與 kid 檢查、Gemini 假回應重試，以及獨立暫存 SQLite 的 API 流程。HTTP 測試全部使用 stub，不呼叫外部服務。影片測試在缺少 ffmpeg 時自動略過。Token 時間由手動時間提供者控制。
 
-## Project Structure
+## 專案結構
 
 ```text
 src/TransferProof.Core/                 領域、介面、比對與 PNG 示範格式
@@ -206,7 +216,7 @@ samples/                               虛構測試資料與產生指令
 docs/architecture.md                   圖表與操作邊界
 ```
 
-## Roadmap
+## 後續規劃
 
 - 持久化工作佇列與 webhook outbox，加入復原與去重。
 - 連結採條件式核銷，協調 Token 與工作階段持久化。
@@ -214,6 +224,6 @@ docs/architecture.md                   圖表與操作邊界
 - 擴充 OCR 版型並評估誤判率。
 - 多執行個體儲存、速率限制與實際銀行入帳確認。
 
-## License
+## 授權
 
 [MIT](LICENSE)。

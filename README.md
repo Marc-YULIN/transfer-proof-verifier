@@ -19,6 +19,16 @@ Distilled from patterns I built and operated in production payment / membership 
 - ES256 compact JWS webhook delivery with a public JWKS endpoint and per-attempt delivery audit.
 - SQLite persistence, optional Redis atomic token consumption, OpenAPI, Scalar, health checks, and isolated integration tests.
 
+## Screenshots
+
+<img src="samples/transfer-matched.png" alt="Synthetic transfer receipt produced by the sample generator (verified as Matched)" width="300">
+
+*Synthetic transfer receipt produced by the sample generator (verified as Matched)*
+
+<img src="docs/images/api-reference.png" alt="API reference (Scalar)">
+
+*API reference (Scalar)*
+
 ## Architecture
 
 ```mermaid
