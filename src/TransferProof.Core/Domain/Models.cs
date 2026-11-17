@@ -14,7 +14,7 @@ public sealed class PaymentOrder
     public string SellerBank { get; set; } = "";
     public string SellerAccount { get; set; } = "";
     public decimal Amount { get; set; }
-    public string Currency { get; set; } = "KRW";
+    public string Currency { get; set; } = "TWD";
     public DateTimeOffset CreatedAt { get; set; }
 }
 

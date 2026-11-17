@@ -8,9 +8,9 @@ public sealed class CoreTests
 {
     [Theory]
     [InlineData("150,000", 150000, null)]
-    [InlineData("₩150,000", 150000, "KRW")]
-    [InlineData("KRW 150,000", 150000, "KRW")]
-    [InlineData("150,000원", 150000, "KRW")]
+    [InlineData("NT$150,000", 150000, "TWD")]
+    [InlineData("TWD 150,000", 150000, "TWD")]
+    [InlineData("150,000元", 150000, "TWD")]
     [InlineData("$1,234.56", 1234.56, "USD")]
     [InlineData("1.234.567", 1234567, null)]
     [InlineData("1 234 567", 1234567, null)]

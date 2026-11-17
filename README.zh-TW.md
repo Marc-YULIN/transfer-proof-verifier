@@ -127,7 +127,7 @@ base=http://localhost:5101
 key=dev-merchant-key
 order="demo-$(date +%s)"
 curl -fsS "$base/api/orders" -H "X-Api-Key: $key" -H 'Content-Type: application/json' \
-  -d "{\"id\":\"$order\",\"buyerName\":\"Alex Chen\",\"sellerName\":\"Jamie Lin\",\"sellerBank\":\"Demo Bank\",\"sellerAccount\":\"110-234-567890\",\"amount\":150000,\"currency\":\"KRW\"}"
+  -d "{\"id\":\"$order\",\"buyerName\":\"Alex Chen\",\"sellerName\":\"Jamie Lin\",\"sellerBank\":\"Demo Bank\",\"sellerAccount\":\"110-234-567890\",\"amount\":150000,\"currency\":\"TWD\"}"
 link=$(curl -fsS "$base/api/capture-links" -H "X-Api-Key: $key" -H 'Content-Type: application/json' -d "{\"orderId\":\"$order\"}")
 token=$(printf '%s' "$link" | jq -r '.deepLink | split("token=")[1]')
 session=$(curl -fsS "$base/api/capture-sessions/exchange" -H 'Content-Type: application/json' -d "{\"token\":\"$token\"}")

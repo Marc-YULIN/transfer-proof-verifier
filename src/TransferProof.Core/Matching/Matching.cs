@@ -14,7 +14,8 @@ public static partial class AmountParser
         currency = null;
         if (string.IsNullOrWhiteSpace(raw)) return false;
         var value = raw.Normalize(NormalizationForm.FormKC).Trim();
-        if (value.Contains('₩') || value.Contains('원') || value.Contains("KRW", StringComparison.OrdinalIgnoreCase)) currency = "KRW";
+        if (value.Contains("NT$", StringComparison.OrdinalIgnoreCase) || value.Contains("NTD", StringComparison.OrdinalIgnoreCase) ||
+            value.Contains("TWD", StringComparison.OrdinalIgnoreCase) || value.Contains('元')) currency = "TWD";
         else if (value.Contains('$') || value.Contains("USD", StringComparison.OrdinalIgnoreCase)) currency = "USD";
         value = CurrencyRegex().Replace(value, "").Trim();
         if (Regex.IsMatch(value, @"^\d{1,3}(\.\d{3}){2,}$")) value = value.Replace(".", "");
@@ -25,7 +26,7 @@ public static partial class AmountParser
         return Regex.IsMatch(value, @"^\d+(\.\d{1,2})?$") &&
             decimal.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out amount);
     }
-    [GeneratedRegex(@"KRW|USD|₩|원|\$", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"NT\$|NTD|TWD|USD|元|\$", RegexOptions.IgnoreCase)]
     private static partial Regex CurrencyRegex();
 }
 

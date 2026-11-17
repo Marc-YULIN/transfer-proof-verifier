@@ -45,7 +45,7 @@ public sealed class ApiTests
     }
     private static async Task<(JsonElement Session, string Token)> SessionAsync(HttpClient client, string order = "demo-001")
     {
-        await ReadAsync(await client.PostAsJsonAsync("/api/orders", new { id = order, buyerName = "Alex Chen", sellerName = "Jamie Lin", sellerBank = "Demo Bank", sellerAccount = "110-234-567890", amount = 150000, currency = "KRW" }));
+        await ReadAsync(await client.PostAsJsonAsync("/api/orders", new { id = order, buyerName = "Alex Chen", sellerName = "Jamie Lin", sellerBank = "Demo Bank", sellerAccount = "110-234-567890", amount = 150000, currency = "TWD" }));
         var link = await ReadAsync(await client.PostAsJsonAsync("/api/capture-links", new { orderId = order }));
         var token = Uri.UnescapeDataString(link.GetProperty("deepLink").GetString()!.Split("token=", StringSplitOptions.None)[1]);
         return (await ReadAsync(await client.PostAsJsonAsync("/api/capture-sessions/exchange", new { token })), token);

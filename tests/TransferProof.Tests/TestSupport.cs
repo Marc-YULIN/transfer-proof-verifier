@@ -32,9 +32,9 @@ public static class TestMedia
         return extraction is null ? data.ToArray() : PngMetadata.Write(data.ToArray(), extraction);
     }
     public static TransferExtraction Extraction(DateTimeOffset at, decimal amount = 150000) =>
-        new(amount, "KRW", "Alex Chen", "Jamie Lin", "Demo Bank", "110-***-567890", at, true, 0.99);
+        new(amount, "TWD", "Alex Chen", "Jamie Lin", "Demo Bank", "110-***-567890", at, true, 0.99);
     public static PaymentOrder Order(DateTimeOffset at) => new() { Id = "sample-001", BuyerName = "Alex Chen", SellerName = "Jamie Lin",
-        SellerBank = "Demo Bank", SellerAccount = "110-234-567890", Amount = 150000, Currency = "KRW", CreatedAt = at };
+        SellerBank = "Demo Bank", SellerAccount = "110-234-567890", Amount = 150000, Currency = "TWD", CreatedAt = at };
 }
 public sealed class StubHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> respond) : HttpMessageHandler
 {

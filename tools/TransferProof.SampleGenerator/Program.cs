@@ -17,7 +17,7 @@ Directory.CreateDirectory(output);
 var name = Get("--name", "transfer-matched");
 if (Path.GetFileName(name) != name) throw new ArgumentException("Name must be a file base name.");
 var at = DateTimeOffset.Parse(Get("--time", TimeProvider.System.GetUtcNow().ToString("O", CultureInfo.InvariantCulture)), CultureInfo.InvariantCulture);
-var extraction = new TransferExtraction(decimal.Parse(Get("--amount", "150000"), CultureInfo.InvariantCulture), Get("--currency", "KRW"),
+var extraction = new TransferExtraction(decimal.Parse(Get("--amount", "150000"), CultureInfo.InvariantCulture), Get("--currency", "TWD"),
     Get("--sender", "Alex Chen"), Get("--receiver", "Jamie Lin"), Get("--bank", "Demo Bank"), Get("--account", "110-234-567890"), at, true, 0.99);
 byte[] Render(bool loading)
 {

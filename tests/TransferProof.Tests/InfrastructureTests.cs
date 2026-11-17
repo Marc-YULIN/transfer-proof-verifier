@@ -80,7 +80,7 @@ public sealed class InfrastructureTests
     {
         using var dir = new TestDirectory(); var expected = TestMedia.Extraction(new ManualTimeProvider().GetUtcNow());
         var bytes = TestMedia.Png(expected); await File.WriteAllBytesAsync(dir.File("sample.png"), bytes);
-        Assert.Equal(expected, await new EmbeddedMetadataTransferExtractor().ExtractAsync(new(dir.File("sample.png"), null, "KRW"), CancellationToken.None));
+        Assert.Equal(expected, await new EmbeddedMetadataTransferExtractor().ExtractAsync(new(dir.File("sample.png"), null, "TWD"), CancellationToken.None));
         Assert.Equal(0xcbf43926u, PngMetadata.Crc32("123456789"u8));
         bytes[^18] ^= 1; Assert.ThrowsAny<Exception>(() => PngMetadata.Read(new MemoryStream(bytes)));
     }
@@ -100,13 +100,13 @@ public sealed class InfrastructureTests
         });
         using var client = new HttpClient(handler); var factory = Substitute.For<IHttpClientFactory>(); factory.CreateClient("Gemini").Returns(client);
         var extractor = new GeminiTransferExtractor(factory, Options.Create(new GeminiOptions { ApiKey = "test-key", Endpoint = "https://example.test" }), TimeProvider.System);
-        Assert.Equal(expected, await extractor.ExtractAsync(new(dir.File("sample.png"), "Transfer completed", "KRW"), CancellationToken.None)); Assert.Equal(2, calls);
+        Assert.Equal(expected, await extractor.ExtractAsync(new(dir.File("sample.png"), "Transfer completed", "TWD"), CancellationToken.None)); Assert.Equal(2, calls);
     }
     [Fact]
     public async Task ExtractAsync_OcrLabels_ParsesFields()
     {
-        const string text = "Transfer completed\nAmount: KRW 150,000\nTo: Jamie Lin\nBank: Demo Bank\nAccount: 110-***-567890\nFrom: Alex Chen\nDate: 2026-11-12 00:00:00 +00:00";
-        var result = await new OcrHeuristicTransferExtractor().ExtractAsync(new("unused", text, "KRW"), CancellationToken.None);
+        const string text = "Transfer completed\nAmount: TWD 150,000\nTo: Jamie Lin\nBank: Demo Bank\nAccount: 110-***-567890\nFrom: Alex Chen\nDate: 2026-11-12 00:00:00 +00:00";
+        var result = await new OcrHeuristicTransferExtractor().ExtractAsync(new("unused", text, "TWD"), CancellationToken.None);
         Assert.Equal(150000, result!.Amount); Assert.Equal("Jamie Lin", result.ReceiverName); Assert.True(result.IsCompletionScreen); Assert.Equal(1, result.Confidence);
     }
 }

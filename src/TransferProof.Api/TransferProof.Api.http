@@ -6,7 +6,7 @@ POST {{base}}/api/orders
 X-Api-Key: {{key}}
 Content-Type: application/json
 
-{"id":"demo-001","buyerName":"Alex Chen","sellerName":"Jamie Lin","sellerBank":"Demo Bank","sellerAccount":"110-234-567890","amount":150000,"currency":"KRW"}
+{"id":"demo-001","buyerName":"Alex Chen","sellerName":"Jamie Lin","sellerBank":"Demo Bank","sellerAccount":"110-234-567890","amount":150000,"currency":"TWD"}
 
 ### Issue link
 POST {{base}}/api/capture-links
